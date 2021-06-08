@@ -1,0 +1,57 @@
+conky.config = {
+   background = true,
+update_interval = 0.5,
+
+double_buffer = true,
+no_buffers = true,
+text_buffer_size = 2048,
+
+gap_x = 10,
+gap_y = 35,
+minimum_width = 200, minimum_height = 200,
+maximum_width = 400,
+own_window = true,
+own_window_type = 'override',
+
+own_window_argb_visual = true,
+own_window_transparent = true,
+
+own_window_transparent = true,
+own_window_argb_visual = true,
+
+own_window_class = 'conky-semi',
+own_window_hints = 'undecorated,sticky,skip_taskbar,skip_pager,below',
+border_inner_margin = 0,
+border_outer_margin = 0,
+
+-- EDIT THIS TO CHANGE POSITION
+alignment = 'bottom_left',
+
+draw_shades = true,
+draw_outline = true,
+draw_borders = false,
+draw_graph_borders = true,
+
+override_utf8_locale = true,
+use_xft = true,
+font = 'Hack-bold:size=13',
+xftalpha = 0.5,
+uppercase = false,
+
+-- Defining colors
+default_color = '#FFFFFF',
+};
+
+conky.text = [[
+${voffset 5}${color CC9900}Artist: ${color CCFFFF}$mpd_artist${voffset -5}
+${voffset 5}${color CC9900}Album: ${color CCFFFF}$mpd_album${voffset -5}
+${voffset 5}${color CC9900}Song: ${color CCFFFF}$mpd_title${voffset -5}
+${voffset 5}${color CC9900}Track: ${color CCFFFF}$mpd_track${voffset -5}
+${voffset 5}${color CC9900}Duration: ${color CCFFFF}$mpd_elapsed/${color CCFFFF}$mpd_length${voffset -5}
+${voffset 5}${color CC9900}Status: ${color CCFFFF}$mpd_status${voffset -5}
+${voffset 5}${color CC9900}Random: ${color CCFFFF}$mpd_random${voffset -5}
+${voffset 5}${color CC9900}Repeat: ${color CCFFFF}$mpd_repeat${voffset -5}
+${voffset 5}${color CC9900}Percent: ${color CCFFFF}$mpd_percent%${voffset -5}
+${voffset 5}${color CCFFFF}${mpd_bar}${voffset -5}
+
+]];
