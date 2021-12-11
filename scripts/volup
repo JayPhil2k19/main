@@ -1,0 +1,4 @@
+#! /bin/sh
+# Increase volume 10%
+sndioctl output.level=+0.10
+aucat -i ~/.config/sounds/bleep.wav

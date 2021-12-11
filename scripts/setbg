@@ -1,0 +1,4 @@
+#!/bin/sh
+
+#Set wallpaper with feh.
+feh -rz --bg-scale ~/Pictures/Wallpapers/*
