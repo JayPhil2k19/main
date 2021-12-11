@@ -1,0 +1,5 @@
+#! /bin/sh
+#ssh-add ~/.ssh/id_rsa && 
+doas sshfs -o allow_other,default_permissions,IdentityFile=/home/jason/.ssh/known_hosts osmc@192.168.0.2:/media/extHD___ /mnt/media/server
+
+
