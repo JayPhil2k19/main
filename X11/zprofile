@@ -1,0 +1,7 @@
+source ~/.path
+eval $(ssh-agent)
+if [ -z $TMUX ]; then
+#medser01 &
+mpd &
+startx
+fi

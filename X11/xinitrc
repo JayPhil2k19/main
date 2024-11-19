@@ -1,0 +1,11 @@
+remaps &
+numlockx &
+unclutter &
+picom &
+dunst &
+setbg &
+#xscreensaver --no-splash &
+conky -c ~/.config/conky/modules/clock &
+#conky -c ~/.config/conky/modules/system &
+mpv ~/.config/Sounds/electric_sweeper.wav &
+exec dwm
