@@ -1,0 +1,52 @@
+#!/bin/bash
+
+# Check if ffmpeg, id3v2, and dialog are installed
+if ! command -v ffmpeg &> /dev/null || ! command -v id3v2 &> /dev/null || ! command -v dialog &> /dev/null; then
+    echo "Please install ffmpeg, id3v2, and dialog."
+    exit 1
+fi
+
+# Function to process a single file
+process_file() {
+    file="$1"
+    if [ -f "$file" ]; then
+        # Get the filename without the extension
+        filename=$(basename -- "$file")
+        filename="${filename%.*}"
+
+        # Download the ID3 information using ffmpeg
+        ffmpeg -i "$file" -f ffmetadata metadata.txt -y &> /dev/null
+
+        # Read the metadata from the temporary file
+        while IFS= read -r line; do
+            # Extract relevant information (e.g., title, artist)
+            if [[ $line == *"artist"* ]]; then
+                artist=$(echo "$line" | cut -d '=' -f 2)
+            elif [[ $line == *"title"* ]]; then
+                title=$(echo "$line" | cut -d '=' -f 2)
+            fi
+        done < metadata.txt
+
+        # Update the ID3 tags using id3v2
+        id3v2 --artist "$artist" --song "$title" "$file"
+
+        # Remove the temporary file
+        rm metadata.txt
+
+        echo "ID3 information downloaded successfully for $filename."
+    else
+        echo "File not found: $file"
+    fi
+}
+
+# Loop to select and process files
+while true; do
+    selected_file=$(dialog --title "Select MP3 File" --stdout --fselect "$HOME/" 14 48)
+    if [ -z "$selected_file" ]; then
+        break
+    fi
+    process_file "$selected_file"
+done
+
+echo "Exiting..."
+

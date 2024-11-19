@@ -1,0 +1,24 @@
+#!/bin/bash
+
+# Path to the directory containing the songs
+songs_dir="$HOME/Music/Limp Bizkit"
+
+# Change to the songs directory
+cd "$songs_dir" || exit
+
+# Loop through each song in the directory
+for song in *; do
+    # Check if the file is a regular file
+    if [ -f "$song" ]; then
+        # Use mediainfo to extract the artist and album information
+        artist=$(mediainfo --Inform="General;%Performer%" "$song")
+        album=$(mediainfo --Inform="General;%Album%" "$song")
+
+        # Create directories if they don't exist
+        mkdir -p "$artist/$album"
+
+        # Move the song to the artist/album directory
+        mv "$song" "$artist/$album/"
+    fi
+done
+

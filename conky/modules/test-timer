@@ -1,0 +1,47 @@
+-- Conky configuration
+conky.config = {
+    -- Conky settings
+    background = true,
+    update_interval = 1,
+    total_run_times = 0,
+    cpu_avg_samples = 2,
+    net_avg_samples = 2,
+    override_utf8_locale = true,
+    double_buffer = true,
+    no_buffers = true,
+    text_buffer_size = 2048,
+    uppercase = false,
+    use_spacer = 'none',
+
+    -- Conky positioning
+    alignment = 'top_right',
+    gap_x = 10,
+    gap_y = 40,
+
+    -- Conky window settings
+    own_window = true,
+    own_window_class = 'Conky',
+    own_window_type = 'desktop',
+    own_window_argb_visual = true,
+    own_window_argb_value = 120,
+    own_window_hints = 'undecorated,below,sticky,skip_taskbar,skip_pager',
+
+    -- Conky colors
+    default_color = 'white',
+    color1 = 'red',
+    color2 = 'green',
+    color3 = 'blue',
+
+    -- Lua load settings
+    lua_load = '~/.conky/scripts/clock.lua',
+
+    -- Lua draw settings
+    lua_draw_hook_pre = 'main',
+}
+
+-- Conky text
+conky.text = [[
+    ${font DejaVu Sans Mono:size=20}${time %H:%M:%S}${font}
+    ${font DejaVu Sans Mono:size=10}${time %A, %B %d}${font}
+]]
+

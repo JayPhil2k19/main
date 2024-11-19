@@ -1,0 +1,18 @@
+#!/bin/bash
+
+# Check if mpc command is available
+if ! command -v mpc &> /dev/null; then
+    echo "mpc command not found. Please install mpc first."
+    exit 1
+fi
+
+# Get the playlist status from mpc
+playlist_status=$(mpc playlist)
+
+# Check if the playlist is empty
+if [ -z "$playlist_status" ]; then
+    echo "No active playlist."
+else
+    echo "Active playlist found."
+fi
+

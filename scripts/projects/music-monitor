@@ -1,0 +1,36 @@
+#!/bin/bash
+
+PID=$(pgrep -a conky | grep 'music' | awk '{print $1}')
+music="$HOME/.config/conky/modules/music"
+
+# Function to check if ncmpcpp is running and playing music
+is_music_playing() {
+    pgrep -x ncmpcpp > /dev/null && \
+    mpc status | grep -q playing
+	if [ ! -z $PID ]; then
+return 0
+exit
+	fi
+}
+
+loop(){
+# Start an infinite loop to check the status of ncmpcpp
+while true; do
+    if is_music_playing; then
+        # If ncmpcpp is running and playing music, start Conky if it's not already running
+        pgrep -x conky -c $muisc > /dev/null || conky &
+    else
+        # If ncmpcpp is not running or not playing music, stop Conky if it's running
+        pgrep -x conky > /dev/null && pkill -x conky
+    fi
+    # Check every 5 seconds
+    sleep 5
+done
+}
+
+main(){
+is_music_playing
+loop
+}
+
+main

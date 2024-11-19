@@ -1,0 +1,46 @@
+#!/bin/bash
+
+# Synchronize package databases and check for updates
+updates=$(checkupdates 2>/dev/null | wc -l)
+
+# Detect dependency cycles using pacman -Syuw and check for 'dependency cycle'
+dep_cycles=$(doas pacman -Syuw --print-format "%n %d" --noconfirm 2>&1 | grep -i "dependency cycle")
+
+# Get the last update time from the pacman log
+last_update=$(grep -i "starting full system upgrade" /var/log/pacman.log | tail -1 | awk '{print $1}' | cut -c 2-11)
+
+# If there are no updates, set updates to zero
+if [ -z "$updates" ]; then
+  updates=0
+fi
+
+# Convert date format to spoken format
+if [ -n "$last_update" ]; then
+  last_update_date=$(date -d "$last_update" '+%B %d, %Y')
+  last_update_time=$(date -d "$last_update" '+%H:%M')
+  last_update_spoken="The last system update was on $last_update_date at $last_update_time."
+else
+  last_update_spoken="No record of the last system update found."
+fi
+
+# Prepare messages
+update_message="There are $updates updates available."
+last_update_message="$last_update_spoken"
+
+# Check if there are any dependency cycles
+if [ -n "$dep_cycles" ]; then
+  dep_cycle_message="Dependency cycles detected. Please review the following packages: $(echo "$dep_cycles" | awk -F' -> ' '{print $1}' | uniq | tr '\n' ', ' | sed 's/, $//')"
+else
+  dep_cycle_message="No dependency cycles detected."
+fi
+
+# Output messages using espeak
+espeak "$update_message" && echo $update_message
+espeak "$last_update_message" && echo $last_update_message
+espeak "$dep_cycle_message" && echo $dep_cycle_message
+
+# Print messages to the terminal as well
+#echo $update_message
+#echo $last_update_message
+#echo $dep_cycle_message
+

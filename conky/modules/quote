@@ -1,0 +1,76 @@
+# --------------------------------------------------------------------------------------------- #
+#
+# .conkyrc - derived from various examples across the 'net
+#
+# Some of the sites that proved most usful include:
+#   http://mylinuxramblings.wordpress.com/2010/03/23/how-to-configure-the-conky-system-monitor/`
+#   http://crunchbanglinux.org/wiki/conky
+#   http://lusule.wordpress.com/2008/08/07/how-to-4/
+#
+# --------------------------------------------------------------------------------------------- #
+
+#xinerama_head = 2
+# -------------------- Conky's Run Time Parameters -------------------- #
+
+update_interval 300.0                     # Conky update interval in seconds
+total_run_times 0                       # Number of updates before quitting.  Set to zero to run forever.
+no_buffers yes                          # Subtract file system buffers from used memory?
+cpu_avg_samples 2                       # Number of cpu samples to average. Set to 1 to disable averaging
+net_avg_samples 2                       # Number of net samples to average. Set to 1 to disable averaging
+
+# -------------------- Conky's General Look &amp; Feel -------------------- #
+
+# --- defualt values --- #
+default_color black                      # Default color and border color
+default_bar_size 0 6                    # Specify a default width and height for bars.
+default_gauge_size 25 25                # Specify a default width and height for gauges.
+default_graph_size 0 25                 # Specify a default width and height for graphs.
+default_outline_color black             # Default border and text outline color
+default_shade_color yellow              # Default border and text shading color
+
+# --- predefined colors - http://www.kgym.jp/freesoft/xrgb.html --- #
+color0 FFFFFF                           # white
+color1 FFA500                           # orange
+color2 B22222                           # firebrick
+color3 696969                           # dim gray
+color4 D3D3D3                           # light gray
+color5 2F4F4F                           # dark slate gray
+color6 FFEC8B                           # light golden rod
+color7 54FF9F                           # sea green
+color8 FF8C69                           # salmon
+color9 FFE7BA                           # wheat
+
+# --- window layout &amp; options --- #
+own_window yes                          # Conky creates its own window instead of using desktop
+own_window_type override                  # If own_window is yes, use type normal, desktop, or override
+own_window_transparent yes              # Use pseudo transparency with own_window?
+own_window_colour blue                  # If own_window_transparent is no, set the background colour
+double_buffer yes                       # Use double buffering (reduces flicker)
+use_spacer right                        # Adds spaces to stop object from moving
+maximum_width 600                       # Maximum width of window in pixels
+own_window_hints undecorated,below,sticky,skip_taskbar,skip_pager
+
+# --- window placment --- #
+alignment mm
+# --- borders, margins, and outlines --- #
+draw_graph_borders yes                  # Do you want to draw borders around graphs
+border_inner_margin 9                   # Window's inner border margin (in pixels)
+border_outer_margin 5                   # Window's outer border margin (in pixels)
+gap_x 10                                # Gap between borders of screen and text (on x-axis)
+gap_y 40                                # Gap between borders of screen and text (on y-axis)
+border_width 10                         # Window's border width (in pixels)
+
+# --- Text --- #
+draw_outline yes                         # Do you want ot draw outlines
+draw_shades yes                          # Do you want to draw shades
+draw_borders no                         # Do you want to draw borders around text
+uppercase no                            # set to yes if you want all text to be in uppercase
+use_xft yes                             # use the X FreeType interface library (anti-aliased font)
+xftfont Hack-bold:size=12:weight=bold    # Xft font to be used
+
+# -------------------- Conky's Displayed System Monitoring Parameters -------------------- #
+TEXT
+# Title / Banner message
+${color1}
+${alignc 20}${exec fortune | awk '{print $0}'}
+$color

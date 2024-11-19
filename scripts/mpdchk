@@ -1,0 +1,67 @@
+#!/bin/bash
+
+check(){
+if [ -f "~/conky.pid" ]; then
+
+	pid_orig=$(cat ~/conky.pid)
+	echo "the conky file is here"
+	return 0
+	exit
+fi
+
+pid_new=$(pgrep -a conky | grep music | awk '{print $1}')
+
+}
+
+end_dbl(){
+if [ "$pid_new" != "$pid_org" ]; then
+echo "more than one found"
+kill $pid_new
+return 1
+exit
+fi
+}
+
+
+run(){
+conky -c ~/.config/conky/modules/music &
+ conk_var=`pgrep -a conky | grep music | awk '{print $1}'`
+touch ~/conky.pid
+echo $conk_var > conky.pid
+#pidof -o %PPID -x $0 >/dev/null && echo "ERROR: Script $0 already running" && exit 1
+}
+
+mpd(){
+# Check if both mpd and ncmpcpp are active
+while true; do
+if pgrep -x "mpd" > /dev/null && pgrep -x "ncmpcpp" > /dev/null ; then
+playlist_status=$(mpc playlist)
+if [ -z "$playlist_status" ]; then
+    echo "No active playlist."
+end_dbl
+else
+    echo "Active playlist found."
+if mpc | grep -q "playing" ; then
+	    # Run the Conky module (replace <path_to_your_conkyrc> with the actual path to your conky configuration file)
+#	        conky -c  $HOME/.config/conky/modules/music &
+		return 0
+		exit
+	else
+		    echo "mpd or ncmpcpp is not active"
+		    exit
+		    sleep 1s
+fi
+fi
+fi
+done
+}
+
+main(){
+	while true; do
+	mpd
+	run
+	done
+}
+
+main
+

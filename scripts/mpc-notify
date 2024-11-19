@@ -1,0 +1,21 @@
+#!/bin/bash
+
+# Function to send notification using Dunst
+send_notification() {
+	    dunstify -a "mpc-notifier" -u low -t 5000 "$1"
+    }
+
+    # Main loop to check for changes in mpc status
+while true; do
+current_status=$(mpc status | head -n 1)
+
+if [ "$current_status" != "$previous_status" ]; then
+send_notification "Now Playing: $current_status"
+#espeak -x -v en-us -s150 -p99 | $current_status
+previous_status="$current_status"
+fi
+
+sleep 1
+
+done
+

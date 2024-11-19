@@ -1,0 +1,32 @@
+#!/bin/bash
+
+# Set the path to your music directory
+MUSIC_DIR="$HOME/Music"
+
+# Get the list of music files
+MUSIC_FILES=$(find "$MUSIC_DIR" -type f -name "*.mp3" -o -name "*.flac" -o -name "*.ogg")
+
+# Check if there are any music files
+if [ -z "$MUSIC_FILES" ]; then
+    echo "No music files found in $MUSIC_DIR"
+    exit 1
+fi
+
+# Use dmenu to select a music file
+SELECTED_FILE=$(echo "$MUSIC_FILES" | dmenu -l 20 -i -p "Select a music file:")
+
+# Check if a file was selected
+if [ -n "$SELECTED_FILE" ]; then
+    # Clear the current playlist
+    mpc clear
+
+    # Add the selected file to the playlist
+	doas mpc add "$SELECTED_FILE"
+
+    # Play the selected file
+    mpc play
+else
+    echo "No file selected"
+    exit 1
+fi
+

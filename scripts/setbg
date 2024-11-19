@@ -1,0 +1,55 @@
+#!/bin/bash
+
+info(){
+# Directory containing the wallpapers
+WALLPAPER_DIR="$HOME/Wallpapers/Black/"
+
+# Array to store the wallpaper file names
+WALLPAPERS=()
+
+# Fill the array with the wallpaper file names
+while IFS= read -r -d '' file; do
+    WALLPAPERS+=("$file")
+#done < <(find "$WALLPAPER_DIR" -type f -name '*.jpg' -or -name '*.png' -print0)
+done < <(find "$WALLPAPER_DIR" -type f -name '*.jpg' -print0)
+}
+
+# Get the process ID of the current script
+check(){
+pid=$$> ./tmp.pid
+
+# Check if another instance of this script is running
+running=$(pgrep -cx "$(basename "$0")")
+run=$(pgrep -x "setbg")
+if [ "$run" = "$running" ]; then
+	exit
+fi
+# If there is more than 1 instance running (including the current one), exit
+if [[ "$running" -gt 1 && "$run" != "$running" ]]; then
+	  echo "Another instance of this script is already running. Exiting." | espeak
+	    exit 1
+fi
+}
+
+# Function to change the wallpaper
+change_wallpaper() {
+    index=$((RANDOM % ${#WALLPAPERS[@]}))
+    feh -z --bg-scale "${WALLPAPERS[index]}"
+echo $index | wc -l
+}
+
+loop(){
+# Loop to change wallpaper every hour
+while true; do
+    info
+    change_wallpaper
+     sleep 20m
+done
+}
+
+main(){
+check
+loop
+}
+
+main

@@ -1,0 +1,1 @@
+doas mount -t cifs //10.0.0.178/mediashare /mnt/media/server --verbose -o username=admin,password=smbadmin01,uid=1000,gid=970,vers=2.1,workgroup=MYGROUP

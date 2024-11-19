@@ -1,0 +1,11 @@
+#!/bin/bash
+
+if pgrep screenkey > /dev/null; then
+    pkill screenkey
+    echo "Screenkey: off." | espeak -s125
+else
+    screenkey &
+    echo "Screenkey: on." | espeak -s125
+fi
+
+

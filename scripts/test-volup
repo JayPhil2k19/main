@@ -1,0 +1,22 @@
+#! /bin/sh
+# Increase volume 5%
+
+speak(){
+volcur=$(pamixer --get-volume )
+espeak-ng $volcur"%"
+}
+
+up(){
+volup=$(pamixer --increase 5)
+speak
+mpv ~/.config/Sounds/volume
+}
+
+
+main(){
+up
+}
+
+main
+
+

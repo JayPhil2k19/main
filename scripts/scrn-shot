@@ -1,0 +1,18 @@
+#! /bin/bash
+
+curdir='pwd'
+scrdir='$HOME/Screenshots'
+#picture$(maim pici-full-$(date '+%y%m%d-%H%M-%S').png)
+
+takpic(){
+	if [ $curdir != $scrdir ]; then
+		cd $scrdir
+	fi
+mpv $HOME/.config/Sounds/camera1.wav
+maim pici-full-$(date '+%y%m%d-%H%M-%S').png
+}
+
+
+main(){
+takpic
+}

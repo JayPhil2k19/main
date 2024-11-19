@@ -1,0 +1,6 @@
+#!  /bin/sh
+prompt(){
+	"$(printf \"No\\nYes\" | dmenu -i -nb darkred -sb red -sf white -nf gray -p \"Shutdown?\")\" = Yes ] && aplay ~/Sounds/computer_magic.wav && systemctl poweroff") },
+	}
+
+doas shutdown -hp now

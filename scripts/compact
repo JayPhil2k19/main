@@ -1,0 +1,12 @@
+#! /bin/sh
+#prog='picom &'
+progvar=`pgrep picom`
+
+while true; do
+if [ $progvar = " " ]; then
+$procom &g
+else kill $progvar
+exit
+fi
+done
+

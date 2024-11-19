@@ -1,0 +1,5 @@
+#! /bin/sh
+#ssh-add ~/.ssh/id_rsa.pub
+SSHPASS='medser01' #sshpass -ve
+doas sshfs -o allow_other,default_permissions,follow_symlinks,IdentityFile=/home/jason/.ssh/known_hosts admin@10.0.0.178:/home/admin /mnt/media/server
+

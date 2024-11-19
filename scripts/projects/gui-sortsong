@@ -1,0 +1,35 @@
+#!/bin/bash
+
+# Use zenity to select the folder containing the songs
+songs_dir=$(zenity --file-selection --directory --title="Select Folder")
+
+# Check if the user canceled folder selection
+if [ $? -ne 0 ]; then
+    echo "Folder selection canceled."
+    exit 1
+fi
+
+# Change to the selected songs directory
+cd "$songs_dir" || exit
+
+# Loop through each song in the directory
+for song in *; do
+    # Check if the file is a regular file
+    if [ -f "$song" ]; then
+        # Check if the file is an MP3 file
+        if [[ "$song" == *.mp3 ]]; then
+            # Use mediainfo to extract the artist and album information
+            artist=$(mediainfo --Inform="General;%Performer%" "$song")
+            album=$(mediainfo --Inform="General;%Album%" "$song")
+
+            # Create directories if they don't exist
+            mkdir -p "$artist/$album"
+
+            # Move the song to the artist/album directory
+            mv "$song" "$artist/$album/"
+        else
+            echo "Skipping $song: not an MP3 file"
+        fi
+    fi
+done
+

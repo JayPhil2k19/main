@@ -1,0 +1,41 @@
+#!/bin/bash
+
+# Check if ffmpeg and id3v2 are installed
+if ! command -v ffmpeg &> /dev/null || ! command -v id3v2 &> /dev/null; then
+    echo "Please install ffmpeg and id3v2."
+    exit 1
+fi
+
+# Specify the directory containing the MP3 files
+directory="$HOME/Music/Ramstien"
+
+# Iterate over each MP3 file in the directory
+for file in "$directory"/*.mp3; do
+    if [ -f "$file" ]; then
+        # Get the filename without the extension
+        filename=$(basename -- "$file")
+        filename="${filename%.*}"
+
+        # Download the ID3 information using ffmpeg
+        ffmpeg -i "$file" -f ffmetadata metadata.txt -y &> /dev/null
+
+        # Read the metadata from the temporary file
+        while IFS= read -r line; do
+            # Extract relevant information (e.g., title, artist)
+            if [[ $line == *"artist"* ]]; then
+                artist=$(echo "$line" | cut -d '=' -f 2)
+            elif [[ $line == *"title"* ]]; then
+                title=$(echo "$line" | cut -d '=' -f 2)
+            fi
+        done < metadata.txt
+
+        # Update the ID3 tags using id3v2
+        id3v2 --artist "$artist" --song "$title" "$file"
+
+        # Remove the temporary file
+        rm metadata.txt
+    fi
+done
+
+echo "ID3 information downloaded successfully."
+

@@ -1,0 +1,13 @@
+#! /bin/bash
+
+output(){
+vol=$(pamixer --get-volume)
+echo $vol%
+}
+
+main(){
+output
+}
+
+main
+

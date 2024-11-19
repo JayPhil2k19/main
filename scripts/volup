@@ -1,0 +1,30 @@
+#!/bin/bash
+
+up(){
+COLOR="#00FF00"  # Green color
+voldwn=$(pamixer --increase 5)
+# Get the current volume percentage using pamixer
+volume=$(pamixer --get-volume)
+# Get the maximum volume using pamixer
+max_volume=$(pamixer --get-max-volume) >2 /dev/null
+
+# Calculate the progress bar length based on the volume percentage
+progress_bar_length=$(( volume / 2 ))
+
+# Define the notification message
+notification_message="Volume: $volume%"
+# Define the notification timeout in milliseconds
+notification_timeout=2000
+
+# Use dunstify to display the notification
+dunstify -u low -t $notification_timeout -r 2593 -h string:x-dunst-stack-tag:volume -h int:value:$volume -h int:max:$max_volume -h string:percentage:$notification_message -h string:frame:progress -h int:percentage:$volume -h int:length:$progress_bar_lengt -h string:foreground:$COLOR
+}
+
+main(){
+up
+mpv ~/.config/Sounds/volume
+return 0
+exit
+}
+
+main

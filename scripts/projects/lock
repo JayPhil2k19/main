@@ -1,0 +1,18 @@
+#!/bin/bash
+
+# Take a screenshot
+screenshot="screenshot.png"
+scrot "$screenshot"
+
+# Blur the screenshot
+convert "$screenshot" -blur 0x8 blurred.png
+
+# Overlay lock icon
+lock_icon="lock_icon.png"
+convert blurred.png \( -size 100x100 xc:none -fill white -draw 'circle 50,50 50,95' -fill black -draw 'circle 50,50 50,50' \) -gravity center -composite "$lock_icon"
+
+# Set the lock screen wallpaper
+feh --bg-fill "$lock_icon"
+
+# Clean up temporary files
+rm "$screenshot" blurred.png

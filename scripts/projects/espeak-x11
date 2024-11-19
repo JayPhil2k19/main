@@ -1,0 +1,17 @@
+#!/bin/bash
+
+# Get the window ID of the currently active window
+active_window_id=$(xdotool getactivewindow)
+
+# Use xprop to get the window's name
+window_name=$(xprop -id "$active_window_id" WM_NAME | cut -d '"' -f 2)
+
+# Check if window name is found
+if [ -n "$window_name" ]; then
+    echo "Active window name: $window_name"
+    # Use espeak to say the window name
+    espeak "$window_name"
+else
+    echo "No active window found."
+fi
+
