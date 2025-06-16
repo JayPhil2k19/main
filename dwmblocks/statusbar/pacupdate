@@ -1,0 +1,8 @@
+#! /bin/bash
+
+pac(){
+upd="$(checkupdates | wc -l)"
+echo -e  "Updates:""$upd"
+}
+
+pac

@@ -1,0 +1,29 @@
+--- dwmblocks.c
++++ dwmblocks.c
+@@ -14,7 +14,6 @@ typedef struct {
+ 	unsigned int signal;
+ } Block;
+ void sighandler(int num);
+-void buttonhandler(int sig, siginfo_t *si, void *ucontext);
+ void replace(char *str, char old, char new);
+ void getcmds(int time);
+ #ifndef __OpenBSD__
+@@ -86,18 +68,11 @@ void getsigcmds(int signal)
+ 
+ void setupsignals()
+ {
+-	struct sigaction sa;
+ 	for(int i = 0; i < LENGTH(blocks); i++)
+ 	{
+ 		if (blocks[i].signal > 0)
+-		{
+ 			signal(SIGRTMIN+blocks[i].signal, sighandler);
+-			sigaddset(&sa.sa_mask, SIGRTMIN+blocks[i].signal);
+-		}
+ 	}
+-	sa.sa_sigaction = buttonhandler;
+-	sa.sa_flags = SA_SIGINFO;
+-	sigaction(SIGUSR1, &sa, NULL);
+ 
+ }
+ #endif
