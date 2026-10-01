@@ -1,0 +1,31 @@
+#!/bin/sh
+# ~/.config/scripts/start-xm
+
+MENU_FILE="$HOME/.config/xmenu/xmenu/xmenu.sh"
+
+# === CUSTOM COLORS (Safe defaults) ===
+: "${XMENU_BG:=#1e1e2e}"
+: "${XMENU_FG:=#cdd6f4}"
+: "${XMENU_BC:=#89b4fa}"
+: "${XMENU_SC:=#89b4fa}"
+: "${XMENU_SF:=#11111b}"
+: "${XMENU_BW:=2}"
+: "${XMENU_FONT:=Hack:size=12}"
+
+# === Build xmenu arguments safely ===
+XMENU_ARGS="-i"
+XMENU_ARGS="$XMENU_ARGS -bg $XMENU_BG"
+XMENU_ARGS="$XMENU_ARGS -fg $XMENU_FG"
+XMENU_ARGS="$XMENU_ARGS -bc $XMENU_BC"
+XMENU_ARGS="$XMENU_ARGS -sc $XMENU_SC"
+XMENU_ARGS="$XMENU_ARGS -sf $XMENU_SF"
+XMENU_ARGS="$XMENU_ARGS -bw $XMENU_BW"
+XMENU_ARGS="$XMENU_ARGS -fn $XMENU_FONT"
+
+if [ -x "$MENU_FILE" ]; then
+    CMD="$("$MENU_FILE" | xmenu $XMENU_ARGS)"
+    [ -n "$CMD" ] && sh -c "$CMD" &
+else
+    CMD="$(printf "Terminal\t%s\n" "$TERMINAL" | xmenu -i -bg "$XMENU_BG" -fg "$XMENU_FG" -fn "$XMENU_FONT")"
+    [ -n "$CMD" ] && sh -c "$CMD" &
+fi

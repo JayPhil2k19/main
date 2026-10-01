@@ -1,0 +1,86 @@
+#! /bin/bash
+
+create(){
+oPID="$$" # Get PID of current script.
+touch $HOME/tmp/pid/timer.pid
+PIDf="$HOME/tmp/pid/timer.pid"
+echo $oPID > $PIDf
+}
+
+counter(){
+espeak-ng "Time started. 5 minutes remaining."
+mpv ~/.config/Sounds/chime.wav 2>/dev/null
+conky -c ~/.config/conky/modules/timer &
+GREEN='\033[0;32m'
+RED='\033[0;31m'
+YELLOW='\033[0;33m'
+RESET='\033[0m'
+hour=0
+min=5
+sec=0
+tput civis
+echo -ne "${GREEN}"
+        while [ $hour -ge 0 ]; do
+                 while [ $min -ge 0 ]; do
+                         while [ $sec -ge 0 ]; do
+                                 if [ "$hour" -eq "0" ] && [ "$min" -eq "0" ]; then
+                                         echo -ne "${YELLOW}"
+                                 fi
+                                 if [ "$hour" -eq "0" ] && [ "$min" -eq "0" ] && [ "$sec" -le "5" ]; then
+					 espeak-ng "$sec"
+                                         echo -ne "${RED}"
+                                 fi
+          echo -ne "$(printf "%02d" $hour):$(printf "%02d" $min):$(printf "%02d" $sec)\033[0K\r" > ~/tmp/time.out
+                                 let "sec=sec-1"
+                                 sleep 1
+                         done
+                         sec=59
+                         let "min=min-1"
+                 done
+                 min=59
+                 let "hour=hour-1"
+         done
+echo -e "${RESET}"
+tput cnorm
+espeak-ng "Timer ended."
+mpv ~/.config/Sounds/buzzer.wav
+return 0
+}
+
+check(){
+pid=$$
+
+# Check if another instance of this script is running
+running=$(pgrep -cx "$(basename "$0")")
+
+# If there is more than 1 instance running (including the current one), exit
+if [ "$running" -gt 1 ]; then
+	  echo "Another instance of this script is already running. Exiting."
+	    exit 1
+fi
+return 0
+}
+
+clean(){
+conky_timer=`pgrep -a conky | grep -i 'timer' | awk '{print $1}'`
+kill $conky_timer 2> /dev/null
+if [ -f  $PIDf ] ; then
+		espeak-ng "PID file found deleting!"
+		rm  $PIDf
+			return 0
+			exit
+		else
+		espeak-ng "PID file not found."
+fi
+return 1
+}
+
+main(){
+create
+check
+counter
+clean
+exit
+}
+
+main

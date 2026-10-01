@@ -1,0 +1,81 @@
+#!/usr/bin/env bash
+# system-action - Reboot or power off with visual confirmation (grayscale + blur)
+# Usage: system-action reboot|poweroff|shutdown
+
+set -euo pipefail
+
+# XDG-compliant paths
+SOUND="${XDG_CONFIG_HOME:-$HOME/.config}/Sounds/win2kshutdown.mp3"
+
+TMP_DIR="/tmp"
+RAW_SCREENSHOT="$(mktemp --tmpdir="$TMP_DIR" raw-screenshot.XXXXXX.png)"
+PROCESSED_SCREENSHOT="$(mktemp --tmpdir="$TMP_DIR" grayscale-blurred.XXXXXX.png)"
+
+trap 'rm -f "$RAW_SCREENSHOT" "$PROCESSED_SCREENSHOT" 2>/dev/null' EXIT
+
+# Capture and process screenshot
+import -window root "$RAW_SCREENSHOT" || {
+    echo "Error: Failed to capture screenshot" >&2
+    exit 1
+}
+
+magick "$RAW_SCREENSHOT" -colorspace Gray -gaussian-blur 0x3 "$PROCESSED_SCREENSHOT" || {
+    echo "Error: Failed to process image with magick" >&2
+    exit 1
+}
+
+# Determine action and visual settings
+case "${1:-}" in
+    reboot|restart)
+        ACTION="reboot"
+        DOAS_CMD="doas systemctl reboot"
+        PROMPT="Restart?"
+        DMENU_COLORS="-nb darkgreen -sb green -sf white -nf gray"
+        ESPEAK_PROMPT="Restart?"
+        ;;
+    poweroff|shutdown|halt)
+        ACTION="poweroff"
+        DOAS_CMD="doas systemctl poweroff"
+        PROMPT="Shutdown?"
+        DMENU_COLORS="-nb darkred -sb red -sf white -nf gray"
+        ESPEAK_PROMPT="Shutdown?"
+        ;;
+    logoff)
+        ACTION="lock screen"
+        DOAS_CMD="slock"
+        PROMPT="Log Off"
+        DMENU_COLORS="-nb darkblue -sb blue -sf white -nf gray"
+        ESPEAK_PROMPT="Log off?"
+        ;;
+    *)
+        echo "Usage: $(basename "$0") {reboot|poweroff|logoff}"
+        exit 1
+        ;;
+esac
+
+# Show blurred screenshot
+feh --fullscreen --auto-zoom --no-fehbg -N "$PROCESSED_SCREENSHOT" &
+sleep 0.1s
+# Confirmation dialog
+espeak "$ESPEAK_PROMPT"
+choice=$(printf '%s\n' "Yes" "No" \
+    | dmenu -i $DMENU_COLORS -p "$PROMPT")
+
+case "$choice" in
+    Yes)
+        espeak "$ESPEAK_PROMPT Confirmed"
+        mpv --no-video "$SOUND" 2>/dev/null &
+        killall feh 2>/dev/null
+        eval "$DOAS_CMD"
+        ;;
+    No|"")
+        espeak "Cancel."
+        killall feh 2>/dev/null
+        exit 0
+        ;;
+    *)
+        espeak "Cancel."
+        killall feh 2>/dev/null
+        exit 1
+        ;;
+esac

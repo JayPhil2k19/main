@@ -1,0 +1,64 @@
+#!/usr/bin/env bash
+
+set -u
+
+PIDFILE="$HOME/conky.pid"
+CONFIG="$HOME/.config/conky/modules/music"
+
+is_playing() {
+    # Returns 0 (true) only if MPD is currently playing
+    mpc status 2>/dev/null | grep -q "^\[playing\]"
+}
+
+get_conky_pid() {
+    local pid
+    if [[ -f "$PIDFILE" ]]; then
+        pid=$(<"$PIDFILE")
+        if [[ -n "$pid" ]] && ps -p "$pid" -o args= 2>/dev/null | grep -q "conky.*music"; then
+            echo "$pid"
+            return 0
+        fi
+    fi
+    # Fallback: search for running instance
+    pid=$(pgrep -f "conky.*music" | head -n 1)
+    [[ -n "$pid" ]] && echo "$pid"
+    return 1
+}
+
+kill_conky() {
+    local pid
+    pid=$(get_conky_pid)
+    [[ -n "$pid" ]] && kill "$pid" 2>/dev/null
+    rm -f "$PIDFILE"
+}
+
+start_conky() {
+    local pid
+    pid=$(get_conky_pid)
+    if [[ -n "$pid" ]]; then
+        echo "Conky music already running (PID $pid)"
+        return 0
+    fi
+
+    conky -c "$CONFIG" >/dev/null 2>&1 &
+    local new_pid=$!
+
+    sleep 0.5   # give conky time to appear in process list
+    if ps -p "$new_pid" >/dev/null 2>&1; then
+        echo "$new_pid" > "$PIDFILE"
+        echo "Conky music started (PID $new_pid)"
+    else
+        echo "Failed to start Conky" >&2
+        return 1
+    fi
+}
+
+main() {
+    if is_playing; then
+        start_conky
+    else
+        kill_conky
+    fi
+}
+
+main

@@ -1,0 +1,12 @@
+#!/bin/sh
+# ~/.config/scripts/start-xm
+mpv --no-video $HOME/.config/Sounds/menu_sound.mp3 &
+MENU_FILE="$HOME/.config/xmenu/xmenu/xmenu.sh"
+
+if [ -x "$MENU_FILE" ]; then
+    CMD="$("$MENU_FILE" | xmenu -i)"
+    [ -n "$CMD" ] && sh -c "$CMD" &
+else
+    CMD="$(printf "Terminal\t%s\n" "$TERMINAL" | xmenu)"
+    [ -n "$CMD" ] && sh -c "$CMD" &
+fi

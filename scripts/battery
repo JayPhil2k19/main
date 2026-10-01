@@ -1,0 +1,17 @@
+#!/bin/bash
+
+# Find the battery (usually BAT0 or BAT1)
+BATTERY=$(ls /sys/class/power_supply | grep BAT1)
+
+# Check if a battery was found
+if [ -z "$BATTERY" ]; then
+    echo "No battery found"
+    exit 1
+fi
+
+# Read the current capacity (percentage)
+CAPACITY=$(cat /sys/class/power_supply/$BATTERY/capacity)
+
+# Output the battery percentage
+echo "$CAPACITY%"
+espeak "The power level is: "$CAPACITY" percent"

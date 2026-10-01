@@ -1,0 +1,15 @@
+#!/bin/bash
+
+if pgrep screenkey > /dev/null; then
+    pkill screenkey
+    dunstify -u normal -t 5000 "Screenkey" "Screenkey has been deactivated"
+    mpv --no-video ~/.config/Sounds/speech-off.mp3
+#    echo "Screenkey: off." | espeak -s125
+else
+    screenkey &
+    dunstify -u low -t 5000 "Screenkey" "Screenkey has been activated"
+    mpv --no-video ~/.config/Sounds/speech-on.mp3
+#    echo "Screenkey: on." | espeak -s125
+fi
+
+

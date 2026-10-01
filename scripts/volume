@@ -1,0 +1,60 @@
+#!/usr/bin/env bash
+# volume - Control system volume with dunst notification and sound feedback
+# Usage: volume {up|down|mute} [step]
+
+set -euo pipefail
+
+# Default values
+STEP="${2:-5}"                    # Default volume step in percent
+NOTIFICATION_ID=2593
+TIMEOUT=2000
+
+# XDG-compliant sound paths (consistent with your other scripts)
+SOUND_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/Sounds"
+
+# Safely handle the first argument
+ACTION="${1:-}"
+
+case "${ACTION}" in
+    up)
+        pamixer --increase "${STEP}"
+        BGCOLOR='#000001'           # Red for volume down
+        FGCOLOR='#00FF00'           # Green for volume up
+        SOUND="${SOUND_DIR}/altvol.mp3"
+        ;;
+    down)
+        pamixer --decrease "${STEP}"
+        BGCOLOR='#000000'           # Red for volume down
+        FGCOLOR='#FF0000'           # Red for volume down
+        SOUND="${SOUND_DIR}/newvol.mp3"
+        ;;
+    mute)
+        pamixer --toggle-mute
+        COLOR='#FFFF00'           # Yellow for mute
+        SOUND=""                  # No sound for mute
+        ;;
+    *)
+        echo "Usage: $(basename "$0") {up|down|mute} [step]"
+        exit 1
+        ;;
+esac
+
+# Retrieve current volume after the change
+VOLUME=$(pamixer --get-volume)
+MAX_VOLUME=$(pamixer --get-max-volume 2>/dev/null || echo 100)
+
+# Send notification with explicit foreground color hint
+# (urgency is omitted to prevent overriding with dunstrc urgency colors)
+dunstify -t "${TIMEOUT}" \
+         -r "${NOTIFICATION_ID}" \
+	 -h string:background:"${BGCOLOR}" \
+         -h string:x-dunst-stack-tag:volume \
+         -h int:value:"${VOLUME}" \
+         -h int:max:"${MAX_VOLUME}" \
+         "Volume: ${VOLUME}%" \
+         -h string:foreground:"${FGCOLOR}"
+
+# Play sound feedback only for up/down (backgrounded)
+if [[ -n "${SOUND}" && -f "${SOUND}" ]]; then
+    mpv --really-quiet "${SOUND}" &
+fi

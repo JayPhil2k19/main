@@ -1,0 +1,43 @@
+#!/bin/bash
+
+# Path to battery info (adjust BAT1 to BAT1 if needed)
+BAT_PATH="/sys/class/power_supply/BAT1"
+
+# Check if battery path exists
+if [ ! -d "$BAT_PATH" ]; then
+    echo "Battery information not found at $BAT_PATH"
+    exit 1
+fi
+
+# Read battery status
+status=$(cat "$BAT_PATH/status")
+
+# Read energy values (use charge_* if energy_* not available)
+if [ -f "$BAT_PATH/energy_now" ]; then
+    energy_now=$(cat "$BAT_PATH/energy_now")
+    energy_full=$(cat "$BAT_PATH/energy_full")
+    power_now=$(cat "$BAT_PATH/power_now")
+else
+    energy_now=$(cat "$BAT_PATH/charge_now")
+    energy_full=$(cat "$BAT_PATH/charge_full")
+    power_now=$(cat "$BAT_PATH/current_now")
+fi
+
+# Check if battery is discharging
+if [ "$status" = "Discharging" ]; then
+    if [ "$power_now" -eq 0 ]; then
+        echo "Error: Power consumption is zero, cannot estimate time."
+        exit 1
+    fi
+
+    # Calculate time left (in hours)
+    time_left=$(bc <<< "scale=2; $energy_now / $power_now")
+
+    # Convert to hours and minutes
+    hours=$(echo "$time_left" | cut -d'.' -f1)
+    minutes=$(echo "($time_left - $hours) * 60" | bc | cut -d'.' -f1)
+
+    echo "Battery Time Left: ${hours}h ${minutes}m"
+else
+    echo "Battery is not discharging (Status: $status)"
+fi
