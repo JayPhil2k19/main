@@ -1,0 +1,70 @@
+From dfd7ef09328958c4c36aedc50d80226da90a8153 Mon Sep 17 00:00:00 2001
+From: Ryan Kes <alrayyes@gmail.com>
+Date: Fri, 29 Mar 2019 11:16:37 +0100
+Subject: [PATCH] separator module
+
+---
+ Makefile               |  1 +
+ components/seperator.c | 10 ++++++++++
+ config.def.h           |  1 +
+ slstatus.h             |  3 +++
+ 4 files changed, 15 insertions(+)
+ create mode 100644 components/seperator.c
+
+diff --git a/Makefile b/Makefile
+index 945b5e3..20796b3 100644
+--- a/Makefile
++++ b/Makefile
+@@ -21,6 +21,7 @@ COM =\
+ 	components/num_files\
+ 	components/ram\
+ 	components/run_command\
++	components/seperator\
+ 	components/swap\
+ 	components/temperature\
+ 	components/uptime\
+diff --git a/components/seperator.c b/components/seperator.c
+new file mode 100644
+index 0000000..826a461
+--- /dev/null
++++ b/components/seperator.c
+@@ -0,0 +1,10 @@
++/* See LICENSE file for copyright and license details. */
++#include <stdio.h>
++
++#include "../util.h"
++
++const char *
++seperator(char *seperator)
++{
++    return seperator;
++}
+diff --git a/config.def.h b/config.def.h
+index e06be66..af289e5 100644
+--- a/config.def.h
++++ b/config.def.h
+@@ -45,6 +45,7 @@ static const char unknown_str[] = "n/a";
+  * ram_total           total memory size in GB         NULL
+  * ram_used            used memory in GB               NULL
+  * run_command         custom shell command            command (echo foo)
++ * seperator           string to echo                  NULL
+  * swap_free           free swap in GB                 NULL
+  * swap_perc           swap usage in percent           NULL
+  * swap_total          total swap size in GB           NULL
+diff --git a/slstatus.h b/slstatus.h
+index 08f610a..78aef21 100644
+--- a/slstatus.h
++++ b/slstatus.h
+@@ -56,6 +56,9 @@ const char *ram_used(void);
+ /* run_command */
+ const char *run_command(const char *cmd);
+ 
++/* seperator */
++const char *seperator(const char *seperator);
++
+ /* swap */
+ const char *swap_free(void);
+ const char *swap_perc(void);
+-- 
+2.21.0
+
