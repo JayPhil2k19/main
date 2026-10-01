@@ -1,0 +1,87 @@
+From dae63ed789adebdcd5136d05e0b9ef46fd73aec3 Mon Sep 17 00:00:00 2001
+From: elbachir-one <bachiralfa@gmail.com>
+Date: Fri, 28 Jun 2024 01:05:17 +0100
+Subject: [PATCH] Tangerine color scheme (Sunset)
+
+---
+ config.def.h | 58 +++++++++++++++++++++++-----------------------------
+ 1 file changed, 26 insertions(+), 32 deletions(-)
+
+diff --git a/config.def.h b/config.def.h
+index 2cd740a..e54a36c 100644
+--- a/config.def.h
++++ b/config.def.h
+@@ -95,44 +95,38 @@ unsigned int tabspaces = 8;
+ 
+ /* Terminal colors (16 first used in escape sequence) */
+ static const char *colorname[] = {
+-	/* 8 normal colors */
+-	"black",
+-	"red3",
+-	"green3",
+-	"yellow3",
+-	"blue2",
+-	"magenta3",
+-	"cyan3",
+-	"gray90",
+-
+-	/* 8 bright colors */
+-	"gray50",
+-	"red",
+-	"green",
+-	"yellow",
+-	"#5c5cff",
+-	"magenta",
+-	"cyan",
+-	"white",
+-
+-	[255] = 0,
+-
+-	/* more colors can be added after 255 to use with DefaultXX */
+-	"#cccccc",
+-	"#555555",
+-	"gray90", /* default foreground colour */
+-	"black", /* default background colour */
++    "#ff5733",
++    "#ffda33",
++    "#33ff57",
++    "#338aff",
++    "#ff33f5",
++    "#33e6ff",
++    "#ff5733",
++    "#ff8533",
++    "#ffcf33",
++    "#33ff6b",
++    "#33a6ff",
++    "#ff33b5",
++    "#33f7ff",
++    "#ff5733",
++    "#ffa833",
++    "#ffd933",
++
++    [255] = 0,
++
++    "#ffda33",
++    "#ff5733",
++    "#000000",
++    "#ffffff",
+ };
+-
+-
+ /*
+  * Default colors (colorname index)
+  * foreground, background, cursor, reverse cursor
+  */
+-unsigned int defaultfg = 258;
+-unsigned int defaultbg = 259;
++unsigned int defaultfg = 259;
++unsigned int defaultbg = 258;
+ unsigned int defaultcs = 256;
+-static unsigned int defaultrcs = 257;
++unsigned int defaultrcs = 257;
+ 
+ /*
+  * Default shape of cursor
+-- 
+2.45.2
+
