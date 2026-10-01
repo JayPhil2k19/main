@@ -1,0 +1,4 @@
+#! /bin/sh
+
+[ \"$(printf \"No\\nYes\" | dmenu -i -nb darkred -sb red -sf white -nf gray -p \"Shutdown?\")\" = Yes ] && systemctl poweroff
+

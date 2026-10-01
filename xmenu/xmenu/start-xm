@@ -1,0 +1,9 @@
+#! /bin/sh
+
+cd ~/.config/xmenu/xmenu/
+
+if [[ -f xmenu.sh ]]; then
+./xmenu.sh
+else
+	return 1
+fi

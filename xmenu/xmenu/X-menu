@@ -1,0 +1,32 @@
+#!/bin/sh
+
+cat <<EOF | xmenu | sh &
+Applications:
+		Firefox		firefox
+		Brave		brave
+	GIMP		gimp
+	Ranger		st -e ranger
+Terminal:
+		st
+		urxvt
+		xterm
+Settings:
+	dwm		st -e vim $HOME/dwm/config.def.h
+	dmenu		st -e vim $HOME/dmenu/config.def.h
+	st		st -e vim $HOME/st/config.h
+	xmenu   	st -e vim $HOME/xmenu/xmenu.sh
+
+Wallpaper:
+	./icons/wallpaper.jpeg	Change Wallpaper	 feh -rz --bg-scale ~/Pictures/Wallpapers/*
+Music
+		Play			mpc play
+		Pause			mpc toggle
+		Stop			mpc stop
+		Prev			mpc prev
+		Next			mpc next; exit && return 0
+
+
+EOF
+
+
+

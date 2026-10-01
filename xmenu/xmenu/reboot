@@ -1,0 +1,3 @@
+#! /bin/sh
+[ \"$(printf \"No\\nYes\" | dmenu -i -nb darkred -sb red -sf white -nf gray -p \"Reboot?\")\" = Yes ] && sudo -A reboot"
+
