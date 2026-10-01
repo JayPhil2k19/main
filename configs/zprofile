@@ -1,0 +1,24 @@
+# ~/.zprofile
+# Purpose: login-shell environment only (sourced once at login)
+
+export SHELL=/bin/zsh
+export LANG=en_US.UTF-8
+
+# Load custom PATH/extensions (keep if still needed)
+[[ -f ~/.path ]] && source ~/.path
+
+# Preferred terminal (used by many tools/scripts)
+export TERMINAL=st
+
+# Start ssh-agent only once (modern way — most distributions now use systemd user socket)
+# Only start if no agent is running
+if [[ -z "$SSH_AUTH_SOCK" ]]; then
+    eval "$(ssh-agent -s)" >/dev/null
+fi
+
+# Optional: cleaner conditional startx — only on tty1, only if no display
+# Many people prefer moving this to ~/.zlogin or a separate tty script
+if [[ -z "$DISPLAY" && "$(tty)" = "/dev/tty1" ]]; then
+    # mpd &               # ← consider moving to .xinitrc or systemd --user
+     exec startx
+fi

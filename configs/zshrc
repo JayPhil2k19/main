@@ -1,0 +1,135 @@
+# ~/.zshrc – minimal XDG bootstrap
+
+export XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
+export XDG_DATA_HOME="${XDG_DATA_HOME:-$HOME/.local/share}"
+export XDG_CACHE_HOME="${XDG_CACHE_HOME:-$HOME/.cache}"
+
+export ZSH_CONFIG_DIR="$XDG_CONFIG_HOME/zsh"
+
+# Source the main configuration
+[[ -f "$ZSH_CONFIG_DIR/zshrc" ]] && source "$ZSH_CONFIG_DIR/zshrc"
+
+# History location (XDG-friendly)
+export HISTFILE="$XDG_DATA_HOME/zsh/history"
+[[ ! -d "$XDG_DATA_HOME/zsh" ]] && mkdir -p "$XDG_DATA_HOME/zsh"
+
+
+# =============================================================================
+# Main Zsh configuration    ~/.config/zsh/zshrc
+# =============================================================================
+
+# ─── 1. Environment ─────────────────────────────────────────────────────────
+export TERMINAL=st
+export MPD_HOST=127.0.0.1
+
+# Secrets should be in a separate, untracked file
+[[ -f "$XDG_CONFIG_HOME/zsh/env.secret" ]] && source "$XDG_CONFIG_HOME/zsh/env.secret"
+
+# ─── 2. History ─────────────────────────────────────────────────────────────
+setopt EXTENDED_HISTORY INC_APPEND_HISTORY SHARE_HISTORY
+HIST_STAMPS="%F %T"
+HISTSIZE=100000
+SAVEHIST=100000
+
+# ─── 3. Core options & key bindings ─────────────────────────────────────────
+setopt autocd beep extendedglob nomatch notify
+bindkey -e
+
+autoload -Uz edit-command-line
+zle -N edit-command-line
+bindkey '^e' edit-command-line
+
+bindkey -s '^o' 'lfcd\n'
+bindkey -s '^f' 'cd "$(dirname "$(fzf)")"\n'
+bindkey '^[[P' delete-char
+
+# ─── 4. Completion + caching ────────────────────────────────────────────────
+autoload -Uz compinit
+zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
+
+# Only rebuild compdump ~once per day
+if [[ -n ${ZDOTDIR:-$HOME}/.zcompdump(#qN.mh+24) ]]; then
+	    compinit
+    else
+	        compinit -C
+fi
+# Force fzf back to its built-in default color scheme
+export FZF_DEFAULT_OPTS="--color="
+# ─ or even more explicit (forces dark 256-color scheme, very close to original)
+export FZF_DEFAULT_OPTS="--color=dark"
+# ─── 5. Fzf-tab styling ─────────────────────────────────────────────────────
+zstyle ':fzf-tab:complete:cd:*' fzf-preview 'exa -1 --color=always $realpath'
+zstyle ':fzf-tab:complete:cd:*' popup-pad 30 0
+
+# ─── 6. Prompt – Spaceship ──────────────────────────────────────────────────
+autoload -U promptinit
+promptinit
+#prompt spaceship
+
+# ─── 7. Directory navigation helper ─────────────────────────────────────────
+lfcd() {
+	local tmp="$(mktemp)"
+	lf -last-dir-path="$tmp" "$@"
+	if [[ -f "$tmp" ]]; then
+		local dir="$(cat "$tmp")"
+		rm -f "$tmp" >/dev/null
+		[[ -d "$dir" && "$dir" != "$(pwd)" ]] && cd "$dir"
+	fi
+}
+					# ─── 8. Plugin loading order (lightweight → visual/heavy) ────────────────────
+
+					# Fuzzy / completion helpers first
+source "$XDG_CONFIG_HOME/zsh/plugins/fzf-tab/fzf-tab.zsh"
+source "$XDG_CONFIG_HOME/zsh/plugins/fzf-functions/fzf_completion"
+source "$XDG_CONFIG_HOME/zsh/plugins/fzf-functions/fzf_key_bindings"
+source "$XDG_CONFIG_HOME/zsh/plugins/fzf-marks.zsh"
+
+			# Visual & interactive enhancements
+source "$XDG_CONFIG_HOME/zsh/plugins/zsh-autosuggestions.zsh"
+source "$XDG_CONFIG_HOME/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
+
+					# Utility & appearance plugins
+source "$XDG_CONFIG_HOME/zsh/plugins/color-man-pages.zsh"
+source "$XDG_CONFIG_HOME/zsh/plugins/colorize.zsh"
+source "$XDG_CONFIG_HOME/zsh/plugins/dirhist.zsh"
+source "$XDG_CONFIG_HOME/zsh/plugins/vim-mode.zsh"
+source "$XDG_CONFIG_HOME/zsh/plugins/cursor.zsh"   # if still needed
+
+source ~/.config/zsh/plugins/spaceship-prompt/spaceship.zsh
+
+
+# ─── 9. LESS / man-page colors ──────────────────────────────────────────────
+export MANPAGER="less -R --use-color -Dd+r -Du+b"
+export LESS_TERMCAP_mb=$'\e[1;35m'
+export LESS_TERMCAP_md=$'\e[1;32m'
+export LESS_TERMCAP_me=$'\e[0m'
+export LESS_TERMCAP_so=$'\e[1;30;46m'
+export LESS_TERMCAP_se=$'\e[0m'
+export LESS_TERMCAP_us=$'\e[4;33m'
+export LESS_TERMCAP_ue=$'\e[0m'
+export GROFF_NO_SGR=1
+export MANROFFOPT="-c"
+
+
+# ─── 10. Optional / previously commented features ───────────────────────────
+# Uncomment only when needed – many of these slow startup
+ PROMPT_COMMAND="say_success"
+ command_not_found_handler() { ... espeak ... }
+# tmux auto-attach
+# ─── fzf official shell integration (key bindings + completion) ─────────────
+if command -v fzf >/dev/null 2>&1; then
+eval "$(fzf --zsh)"
+fi
+# ─── Make fzf-history-widget (Ctrl+R) look closer to standalone fzf ──────────
+export FZF_CTRL_R_OPTS="
+  --layout default
+  --color=dark
+"
+
+# Optional: if you prefer the more "fullscreen-like" look of plain fzf
+# (remove --height 100% if you want ~40-60% default widget height)
+
+# Added by LM Studio CLI (lms)
+export PATH="$PATH:/home/jason/.lmstudio/bin"
+# End of LM Studio CLI section
+

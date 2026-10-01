@@ -1,0 +1,56 @@
+#!/bin/sh
+# ~/.xinitrc — executed by startx / xinit
+
+# --- Early environment / utilities ---------------------------------------
+
+# Keyboard repeat rate & layout remapping (if needed)
+remaps &
+
+# Hardware numlock (still useful on many keyboards)
+numlockx &
+
+# Hide idle mouse cursor
+unclutter --timeout 2 --ignore-scrolling &
+
+# Touchpad gestures (only if you actually use them)
+libinput-gestures-setup start &   # or autostart via systemd --user
+
+# Compositor (modern picom is fine; consider --experimental-backends on newer GPUs)
+picom --backend glx --vsync &     # or --backend xrender if glx causes issues
+
+# Notification daemon
+dunst &
+
+# Notification daemon
+mpd &
+
+# --- Session essentials --------------------------------------------------
+
+# Wallpaper / background
+setbg &               # assuming this is a script that uses feh / nitrogen / xwallpaper etc.
+
+# Music / mpd notification bridge
+mpc-notify &          # only if you actively use mpd + notifications
+
+# Your custom service/daemon (keep only if still needed)
+medser01 &
+
+# Optional system monitor (usually better as systemd --user service)
+# conky -c ~/.config/conky/modules/system &
+
+# System Monitor only — very lightweight
+#conky -c ~/.config/conky/modules/system &
+
+# Clock only — very lightweight
+conky -c ~/.config/conky/modules/clock &
+
+# Startup sound (optional — many people remove this after initial setup)
+mpv --no-terminal ~/.config/Sounds/electric_sweeper.wav &
+
+# Status bar for dwm (almost always last before WM)
+slstatus &
+
+# --- Window manager (must be the last foreground process) ---------------
+doas systemctl --user import-environment DISPLAY WAYLAND_DISPLAY XDG_CURRENT_DESKTOP
+
+exec dwm
