@@ -1,0 +1,21 @@
+--- config.def.h
++++ config.def.h
+@@ -1,5 +1,9 @@
+ /* See LICENSE file for copyright and license details. */
+ 
++/* mouse buttons */
++#define Button8 8
++#define Button9 9
++
+ /* appearance */
+ static const unsigned int borderpx  = 1;        /* border pixel of windows */
+ static const unsigned int snap      = 32;       /* snap pixel */
+@@ -99,7 +103,7 @@ static const Key keys[] = {
+ };
+ 
+ /* button definitions */
+-/* click can be ClkTagBar, ClkLtSymbol, ClkStatusText, ClkWinTitle, ClkClientWin, or ClkRootWin */
++/* click can be ClkTagBar, ClkLtSymbol, ClkStatusText, ClkWinTitle, ClkClientWin, ClkRootWin, or ClkAnywhere */
+ static const Button buttons[] = {
+ 	/* click                event mask      button          function        argument */
+ 	{ ClkLtSymbol,          0,              Button1,        setlayout,      {0} },

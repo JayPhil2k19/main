@@ -1,0 +1,119 @@
+From ce289911cbbb48ce3900e434ac4d1f5a3fa35400 Mon Sep 17 00:00:00 2001
+From: jameel-sawafta <jameelhsawafta@gmail.com>
+Date: Thu, 22 Jan 2026 15:47:37 +0200
+Subject: [PATCH] dwm: add ClkAnywhere and viewnext/viewprev for cyclic tag
+ navigation
+
+---
+ config.def.h |  8 +++++++-
+ dwm.c        | 35 ++++++++++++++++++++++++++++++++---
+ 2 files changed, 39 insertions(+), 4 deletions(-)
+
+diff --git a/config.def.h b/config.def.h
+index 81c3fc0..8c850be 100644
+--- a/config.def.h
++++ b/config.def.h
+@@ -1,5 +1,9 @@
+ /* See LICENSE file for copyright and license details. */
+ 
++/* mouse buttons */
++#define Button8 8
++#define Button9 9
++
+ /* appearance */
+ static const unsigned int borderpx  = 1;        /* border pixel of windows */
+ static const unsigned int snap      = 32;       /* snap pixel */
+@@ -99,7 +103,7 @@ static const Key keys[] = {
+ };
+ 
+ /* button definitions */
+-/* click can be ClkTagBar, ClkLtSymbol, ClkStatusText, ClkWinTitle, ClkClientWin, or ClkRootWin */
++/* click can be ClkTagBar, ClkLtSymbol, ClkStatusText, ClkWinTitle, ClkClientWin, ClkRootWin, or ClkAnywhere */
+ static const Button buttons[] = {
+ 	/* click                event mask      button          function        argument */
+ 	{ ClkLtSymbol,          0,              Button1,        setlayout,      {0} },
+@@ -113,5 +117,7 @@ static const Button buttons[] = {
+ 	{ ClkTagBar,            0,              Button3,        toggleview,     {0} },
+ 	{ ClkTagBar,            MODKEY,         Button1,        tag,            {0} },
+ 	{ ClkTagBar,            MODKEY,         Button3,        toggletag,      {0} },
++	{ ClkAnywhere,          MODKEY,         Button9,        viewnext,       {0} },
++	{ ClkAnywhere,          MODKEY,         Button8,        viewprev,       {0} },
+ };
+ 
+diff --git a/dwm.c b/dwm.c
+index 53b393e..3ed105f 100644
+--- a/dwm.c
++++ b/dwm.c
+@@ -64,7 +64,7 @@ enum { NetSupported, NetWMName, NetWMState, NetWMCheck,
+        NetWMWindowTypeDialog, NetClientList, NetLast }; /* EWMH atoms */
+ enum { WMProtocols, WMDelete, WMState, WMTakeFocus, WMLast }; /* default atoms */
+ enum { ClkTagBar, ClkLtSymbol, ClkStatusText, ClkWinTitle,
+-       ClkClientWin, ClkRootWin, ClkLast }; /* clicks */
++       ClkClientWin, ClkRootWin, ClkAnywhere, ClkLast }; /* clicks */
+ 
+ typedef union {
+ 	int i;
+@@ -226,6 +226,8 @@ static void updatetitle(Client *c);
+ static void updatewindowtype(Client *c);
+ static void updatewmhints(Client *c);
+ static void view(const Arg *arg);
++static void viewnext(const Arg *arg);
++static void viewprev(const Arg *arg);
+ static Client *wintoclient(Window w);
+ static Monitor *wintomon(Window w);
+ static int xerror(Display *dpy, XErrorEvent *ee);
+@@ -451,7 +453,8 @@ buttonpress(XEvent *e)
+ 		click = ClkClientWin;
+ 	}
+ 	for (i = 0; i < LENGTH(buttons); i++)
+-		if (click == buttons[i].click && buttons[i].func && buttons[i].button == ev->button
++		if ((click == buttons[i].click || buttons[i].click == ClkAnywhere)
++		&& buttons[i].func && buttons[i].button == ev->button
+ 		&& CLEANMASK(buttons[i].mask) == CLEANMASK(ev->state))
+ 			buttons[i].func(click == ClkTagBar && buttons[i].arg.i == 0 ? &arg : &buttons[i].arg);
+ }
+@@ -940,7 +943,7 @@ grabbuttons(Client *c, int focused)
+ 			XGrabButton(dpy, AnyButton, AnyModifier, c->win, False,
+ 				BUTTONMASK, GrabModeSync, GrabModeSync, None, None);
+ 		for (i = 0; i < LENGTH(buttons); i++)
+-			if (buttons[i].click == ClkClientWin)
++			if (buttons[i].click == ClkClientWin || buttons[i].click == ClkAnywhere)
+ 				for (j = 0; j < LENGTH(modifiers); j++)
+ 					XGrabButton(dpy, buttons[i].button,
+ 						buttons[i].mask | modifiers[j],
+@@ -2062,6 +2065,32 @@ view(const Arg *arg)
+ 	arrange(selmon);
+ }
+ 
++void
++viewnext(const Arg *arg)
++{
++	unsigned int i;
++	unsigned int curtag = selmon->tagset[selmon->seltags] & TAGMASK;
++
++	for (i = 0; i < LENGTH(tags) && !(curtag & (1 << i)); i++);
++	i = (i + 1) % LENGTH(tags);
++
++	Arg a = {.ui = 1 << i};
++	view(&a);
++}
++
++void
++viewprev(const Arg *arg)
++{
++	unsigned int i;
++	unsigned int curtag = selmon->tagset[selmon->seltags] & TAGMASK;
++
++	for (i = 0; i < LENGTH(tags) && !(curtag & (1 << i)); i++);
++	i = (i == 0) ? LENGTH(tags) - 1 : i - 1;
++
++	Arg a = {.ui = 1 << i};
++	view(&a);
++}
++
+ Client *
+ wintoclient(Window w)
+ {
+-- 
+2.52.0
+
