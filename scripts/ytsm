@@ -1,3 +1,0 @@
-#! /bin/bash
-espeak "Youtube Search:"
-ytfzf -D 2>/dev/null
